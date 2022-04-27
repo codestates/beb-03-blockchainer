@@ -51,7 +51,7 @@ abstract contract OwnerHelper {
   	}
 }
 
-contract BlockToken is Context, InterERC20, OwnerHelper {
+contract BlockChainerToken is Context, InterERC20, OwnerHelper {
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
 
@@ -61,8 +61,8 @@ contract BlockToken is Context, InterERC20, OwnerHelper {
     uint8 public _decimals;
 
     constructor() {
-        _name = "Block Token";
-        _symbol = "Block";
+        _name = "Block Chainer Token";
+        _symbol = "BCT";
         _decimals = 18;
         _totalSupply = 100000000 * (10 ^ _decimals);
         _balances[msg.sender] = _totalSupply;
