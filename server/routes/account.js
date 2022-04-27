@@ -1,9 +1,10 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const lightwallet = require("eth-lightwallet");
-const { User } = require("../models");
+const lightwallet = require('eth-lightwallet');
+const { User } = require('../models');
+const createWallet = require('../contract/createWallet');
 
-router.post("/checkusername", async (req, res) => {
+router.post('/checkusername', async (req, res) => {
   let reqUsername = req.body.username;
   const existuser = await User.findOne({
     where: {
@@ -12,16 +13,16 @@ router.post("/checkusername", async (req, res) => {
   });
   if (!existuser) {
     res.status(200).json({
-      message: "ok",
+      message: 'ok',
     });
   } else {
     res.status(409).json({
-      message: "Error: username Already Exists",
+      message: 'Error: username Already Exists',
     });
   }
 });
 
-router.post("/register", async (req, res) => {
+router.post('/register', async (req, res) => {
   let reqUsername, reqPassword, reqemail;
   reqUsername = req.body.username;
   reqPassword = req.body.password;
@@ -32,55 +33,42 @@ router.post("/register", async (req, res) => {
       email: reqemail,
     },
     default: {},
-  }).then(([user, created]) => {
+  }).then(async ([user, created]) => {
     if (!created) {
       res.status(409).json({
-        message: "Error: Email Already Exists",
+        message: 'Error: Email Already Exists',
       });
     } else {
-      let mnemonic;
-      mnemonic = lightwallet.keystore.generateRandomSeed();
-      lightwallet.keystore.createVault(
+      const wallet = await createWallet();
+
+      console.log(wallet);
+
+      User.update(
         {
+          username: reqUsername,
           password: reqPassword,
-          seedPhrase: mnemonic,
-          hdPathString: "m/0'/0'/0'",
+          email: reqemail,
+          address: wallet.address,
+          privatekey: wallet.privateKey,
+          balance: 0,
         },
-        function (err, ks) {
-          ks.keyFromPassword(reqPassword, function (err, pwDerivedKey) {
-            ks.generateNewAddress(pwDerivedKey, 1);
-
-            let address = ks.getAddresses().toString();
-            let keyStore = ks.serialize();
-
-            console.log(keyStore);
-            User.update(
-              {
-                username: reqUsername,
-                password: reqPassword,
-                address: address,
-                balance: "0",
-              },
-              {
-                where: { email: reqemail },
-              }
-            )
-              .then((result) => {
-                res.status(201).json({
-                  message: "Register Successed",
-                });
-              })
-              .catch((err) => {
-                console.error(err);
-              });
-          });
+        {
+          where: { email: reqemail },
         }
-      );
+      )
+        .then((result) => {
+          res.status(201).json({
+            message: 'Register Successed',
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   });
 });
 
-router.post("/findusername", async (req, res) => {
+router.post('/findusername', async (req, res) => {
   let reqemail = req.body.email;
   const matchuser = await User.findOne({
     where: {
@@ -90,11 +78,11 @@ router.post("/findusername", async (req, res) => {
   console.log(matchuser);
   if (!matchuser) {
     res.status(404).json({
-      message: "Error: username unexists",
+      message: 'Error: username unexists',
     });
   } else {
     res.status(200).json({
-      message: "Find username Successed",
+      message: 'Find username Successed',
       data: {
         username: matchuser.dataValues.username,
         createdAt: matchuser.dataValues.createdAt,
@@ -103,7 +91,7 @@ router.post("/findusername", async (req, res) => {
   }
 });
 
-router.post("/findpassword", async (req, res) => {
+router.post('/findpassword', async (req, res) => {
   let reqUsername = req.body.username;
   let reqemail = req.body.email;
   const matchuser = await User.findOne({
@@ -114,11 +102,11 @@ router.post("/findpassword", async (req, res) => {
   });
   if (!matchuser) {
     res.status(404).json({
-      message: "Error: user unexists",
+      message: 'Error: user unexists',
     });
   } else {
     res.status(200).json({
-      message: "Find password Successed",
+      message: 'Find password Successed',
       data: {
         password: matchuser.dataValues.password,
         createdAt: matchuser.dataValues.createdAt,

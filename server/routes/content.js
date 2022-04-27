@@ -1,9 +1,9 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { Post } = require("../models");
-const { Comment } = require("../models");
+const { Post } = require('../models');
+const { Comment } = require('../models');
 
-router.post("/posting", async (req, res) => {
+router.post('/posting', async (req, res) => {
   const newPost = await Post.create({
     writer: req.body.writer,
     title: req.body.title,
@@ -11,17 +11,17 @@ router.post("/posting", async (req, res) => {
   });
   try {
     res.status(201).json({
-      message: "Posting Successed",
+      message: 'Posting Successed',
       data: newPost,
     });
   } catch (err) {
     res.status(400).json({
-      message: "Error: Posting Failed",
+      message: 'Error: Posting Failed',
     });
   }
 });
 
-router.patch("/update", async (req, res) => {
+router.patch('/update', async (req, res) => {
   await Post.update(
     { title: req.body.title, content: req.body.content },
     {
@@ -38,17 +38,17 @@ router.patch("/update", async (req, res) => {
 
   try {
     res.status(201).json({
-      message: "update Successed",
+      message: 'update Successed',
       data: updatedPost,
     });
   } catch (err) {
     res.status(400).json({
-      message: "Error: update Failed",
+      message: 'Error: update Failed',
     });
   }
 });
 
-router.post("/delete", async (req, res) => {
+router.post('/delete', async (req, res) => {
   await Comment.destroy({
     where: {
       post_id: req.body.id,
@@ -60,7 +60,7 @@ router.post("/delete", async (req, res) => {
     },
   }).then(
     res.status(200).json({
-      message: "delete Successed",
+      message: 'delete Successed',
     })
   );
 });
