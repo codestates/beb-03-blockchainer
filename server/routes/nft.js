@@ -5,7 +5,9 @@ const Web3 = require("web3");
 const { User } = require("../models");
 const { Nft } = require("../models");
 
-const web3 = new Web3("http://localhost:7545");
+const web3 = new Web3(
+  "https://ropsten.infura.io/v3/c757cdcf9f8f4166b4ab238d76f1270a"
+);
 const erc721abi = require("../contracts/erc721abi");
 const erc721bytecode = require("../contracts/erc721bytecode");
 const erc20abi = require("../contracts/erc20abi");

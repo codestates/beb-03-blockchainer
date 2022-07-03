@@ -4,7 +4,9 @@ const router = express.Router();
 const { User } = require("../models");
 const Web3 = require("web3");
 
-const web3 = new Web3("http://localhost:7545");
+const web3 = new Web3(
+  "https://ropsten.infura.io/v3/c757cdcf9f8f4166b4ab238d76f1270a"
+);
 
 router.post("/createaccount", async (req, res) => {
   let serverAccount = await User.findOne({

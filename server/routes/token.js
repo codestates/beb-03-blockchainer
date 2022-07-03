@@ -4,7 +4,9 @@ const router = express.Router();
 const Web3 = require("web3");
 const { User } = require("../models");
 
-const web3 = new Web3("http://localhost:7545");
+const web3 = new Web3(
+  "https://ropsten.infura.io/v3/c757cdcf9f8f4166b4ab238d76f1270a"
+);
 const erc20abi = require("../contracts/erc20abi");
 const erc20bytecode = require("../contracts/erc20bytecode");
 
