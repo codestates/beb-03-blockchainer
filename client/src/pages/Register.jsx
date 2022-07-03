@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import axios from "axios";
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Main = styled.main`
@@ -27,7 +27,7 @@ const Div = styled.div`
 `;
 
 const TitleDiv = styled.div`
-  text-align: center!important;
+  text-align: center !important;
   flex: 0 0 auto;
   width: 100%;
 `;
@@ -67,8 +67,8 @@ const Input = styled.input`
 `;
 
 const MsgDiv = styled.div`
-  margin-top: 1rem!important;
-  margin-bottom: 1rem!important;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
 `;
 
 const Message = styled.p`
@@ -94,7 +94,7 @@ const Button = styled.button`
   cursor: pointer;
   border-radius: 0.3rem;
   margin-right: 1rem;
-  
+
   &:hover {
     border: 0.1rem solid black;
     background-color: white;
@@ -117,18 +117,29 @@ const InputP = styled.p`
 
 const Register = () => {
   const inputRef = useRef([]);
-  const errorMsg = ['', 'Email을 입력해주세요', 'Email 형식이 아닙니다', 'username을 입력해주세요', '잘못된 형식입니다',
-    'username 중복 확인을 해주세요', '중복된 username입니다',
-    '비밀번호를 입력해주세요', '잘못된 형식입니다', '비밀번호가 일치하지 않습니다', '이미 가입되어 있는 메일입니다'];
+  const errorMsg = [
+    "",
+    "Email을 입력해주세요",
+    "Email 형식이 아닙니다",
+    "username을 입력해주세요",
+    "잘못된 형식입니다",
+    "username 중복 확인을 해주세요",
+    "중복된 username입니다",
+    "비밀번호를 입력해주세요",
+    "잘못된 형식입니다",
+    "비밀번호가 일치하지 않습니다",
+    "이미 가입되어 있는 메일입니다",
+  ];
   const invalidUsername = /[^a-z0-9]/g;
   const invalidPassword = /[+ㄱ-ㅎ가-힣]/g;
-  const regEmail = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+  const regEmail =
+    /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
   const [inputs, setInputs] = useState({
     email: "",
     username: "",
     password: "",
-    repeatPassword: ""
-  })
+    repeatPassword: "",
+  });
   const [isChecked, setIsChecked] = useState(false);
   const [error, setError] = useState();
   /* 
@@ -145,20 +156,20 @@ const Register = () => {
   */
 
   const handleInputs = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     console.log(name, value);
-    
-    // 중복확인된 username을 변경했을 때 
-    if (name === 'username' && (isChecked === true || error === 6)) {
+
+    // 중복확인된 username을 변경했을 때
+    if (name === "username" && (isChecked === true || error === 6)) {
       setIsChecked(false);
       setError(5);
     }
 
     setInputs({
       ...inputs,
-      [name]: value
-    })
-  }
+      [name]: value,
+    });
+  };
 
   // username 중복 체크
   const handleCheck = async () => {
@@ -166,28 +177,34 @@ const Register = () => {
     if (inputs.username === "") {
       setError(3);
       inputRef.current[1].focus();
-    } else if (invalidUsername.test(inputs.username) || inputs.username.length > 12 || inputs.username.length < 6) {
+    } else if (
+      invalidUsername.test(inputs.username) ||
+      inputs.username.length > 12 ||
+      inputs.username.length < 6
+    ) {
       setError(4);
       inputRef.current[1].focus();
     } else {
       // 백엔드로 요청 전송
-      const url = "http://localhost:4000/account/checkusername";
+      const url =
+        "http://ec2-3-38-101-203.ap-northeast-2.compute.amazonaws.com/account/checkusername";
       const payload = { username: inputs.username };
-      await axios.post(url, payload)
-      .then((res) => {
-        console.log(res);
-        // 사용 가능하면 isChecked 설정
-        if (res.status === 200) {
-          setIsChecked(true);
-          setError();
-        }
-      })
-      .catch((e) => {
-        // 중복된 username이면 error 설정
-        setError(6);
-      })
+      await axios
+        .post(url, payload)
+        .then((res) => {
+          console.log(res);
+          // 사용 가능하면 isChecked 설정
+          if (res.status === 200) {
+            setIsChecked(true);
+            setError();
+          }
+        })
+        .catch((e) => {
+          // 중복된 username이면 error 설정
+          setError(6);
+        });
     }
-  }
+  };
 
   const handleSubmit = async () => {
     console.log("clicked");
@@ -202,7 +219,11 @@ const Register = () => {
     } else if (inputs.username === "") {
       setError(3);
       inputRef.current[1].focus();
-    } else if (invalidUsername.test(inputs.username) || inputs.username.length > 12 || inputs.username.length < 6) {
+    } else if (
+      invalidUsername.test(inputs.username) ||
+      inputs.username.length > 12 ||
+      inputs.username.length < 6
+    ) {
       setError(4);
       inputRef.current[1].focus();
     } else if (isChecked === false) {
@@ -210,7 +231,10 @@ const Register = () => {
     } else if (inputs.password === "") {
       setError(7);
       inputRef.current[2].focus();
-    } else if (invalidPassword.test(inputs.password) || inputs.password.length < 8) {
+    } else if (
+      invalidPassword.test(inputs.password) ||
+      inputs.password.length < 8
+    ) {
       setError(8);
       inputRef.current[2].focus();
     } else if (inputs.password !== inputs.repeatPassword) {
@@ -218,44 +242,47 @@ const Register = () => {
       setError(9);
       inputRef.current[3].focus();
     } else {
-      console.log('폼 입력 성공');
-      
+      console.log("폼 입력 성공");
+
       // 백엔드로 요청 전송
-      const url = "http://localhost:4000/account/register";
+      const url =
+        "http://http://ec2-3-38-101-203.ap-northeast-2.compute.amazonaws.com/account/register";
       const payload = {
         email: inputs.email,
         username: inputs.username,
-        password: inputs.password
-      }
-      await axios.post(url, payload)
-      .then((res) => {
-        // 회원가입 성공
-        if (res.status === 201) {
-          setError(0);
-        }
-      })
-      .catch((e) => {
-        // 이미 존재하는 회원일 경우 error 설정
-        setError(10);
-      })
-      
+        password: inputs.password,
+      };
+      await axios
+        .post(url, payload)
+        .then((res) => {
+          // 회원가입 성공
+          if (res.status === 201) {
+            setError(0);
+          }
+        })
+        .catch((e) => {
+          // 이미 존재하는 회원일 경우 error 설정
+          setError(10);
+        });
     }
-  }
+  };
 
   return (
     <Main>
       <Section>
         <Container>
-          {error === 0 ?
-            (<Div>
+          {error === 0 ? (
+            <Div>
               <TitleDiv>
                 <Title>회원가입 성공</Title>
               </TitleDiv>
               <Link to="/login">
                 <Button type="button">로그인하러 가기</Button>
               </Link>
-            </Div>) 
-            : (<><Div>
+            </Div>
+          ) : (
+            <>
+              <Div>
                 <TitleDiv>
                   <Title>회원가입</Title>
                 </TitleDiv>
@@ -265,54 +292,119 @@ const Register = () => {
                   <InputDiv>
                     <h3>Email</h3>
                   </InputDiv>
-                  <Input type="email" name="email" placeholder='이메일을 입력해주세요'
-                    onChange={handleInputs} ref={el => (inputRef.current[0] = el)}/>
-                  {error === 1 ? (<MsgDiv><Message>{errorMsg[1]}</Message></MsgDiv>) : (
-                    error === 2 ? (<MsgDiv><Message>{errorMsg[2]}</Message></MsgDiv>) : null
-                  )}
+                  <Input
+                    type="email"
+                    name="email"
+                    placeholder="이메일을 입력해주세요"
+                    onChange={handleInputs}
+                    ref={(el) => (inputRef.current[0] = el)}
+                  />
+                  {error === 1 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[1]}</Message>
+                    </MsgDiv>
+                  ) : error === 2 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[2]}</Message>
+                    </MsgDiv>
+                  ) : null}
                   <InputDiv>
                     <h3>Username</h3>
                     <InputP>아이디는 6-12자의 영문, 숫자</InputP>
-                    <Button type="button" className='check' onClick={handleCheck}>중복 확인</Button>
+                    <Button
+                      type="button"
+                      className="check"
+                      onClick={handleCheck}
+                    >
+                      중복 확인
+                    </Button>
                   </InputDiv>
-                  <Input type="text" name="username" placeholder='username을 입력해주세요'
-                    onChange={handleInputs} ref={el => (inputRef.current[1] = el)}/>
-                  {error === 3 ? (<MsgDiv><Message>{errorMsg[3]}</Message></MsgDiv>) : (
-                    error === 4 ? (<MsgDiv><Message>{errorMsg[4]}</Message></MsgDiv>) : (
-                      error === 5 ? (<MsgDiv><Message>{errorMsg[5]}</Message></MsgDiv>) : (
-                        error === 6 ? (<MsgDiv><Message>{errorMsg[6]}</Message></MsgDiv>) : null
-                      )
-                    )
-                  )}
-                  {isChecked === true ? (<MsgDiv><Message className="ok">사용가능한 username입니다.</Message></MsgDiv>) : null}
+                  <Input
+                    type="text"
+                    name="username"
+                    placeholder="username을 입력해주세요"
+                    onChange={handleInputs}
+                    ref={(el) => (inputRef.current[1] = el)}
+                  />
+                  {error === 3 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[3]}</Message>
+                    </MsgDiv>
+                  ) : error === 4 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[4]}</Message>
+                    </MsgDiv>
+                  ) : error === 5 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[5]}</Message>
+                    </MsgDiv>
+                  ) : error === 6 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[6]}</Message>
+                    </MsgDiv>
+                  ) : null}
+                  {isChecked === true ? (
+                    <MsgDiv>
+                      <Message className="ok">
+                        사용가능한 username입니다.
+                      </Message>
+                    </MsgDiv>
+                  ) : null}
                   <InputDiv>
                     <h3>Password</h3>
-                    <InputP>비밀번호는 8자 이상, 영문/숫자/기호 사용가능</InputP>
+                    <InputP>
+                      비밀번호는 8자 이상, 영문/숫자/기호 사용가능
+                    </InputP>
                   </InputDiv>
-                  <Input type="password" name="password" placeholder='password를 입력해주세요'
-                    onChange={handleInputs} ref={el => (inputRef.current[2] = el)}/>
-                  {error === 7 ? (<MsgDiv><Message>{errorMsg[7]}</Message></MsgDiv>) : (
-                    error === 8 ? (<MsgDiv><Message>{errorMsg[8]}</Message></MsgDiv>) : null
-                  )}
+                  <Input
+                    type="password"
+                    name="password"
+                    placeholder="password를 입력해주세요"
+                    onChange={handleInputs}
+                    ref={(el) => (inputRef.current[2] = el)}
+                  />
+                  {error === 7 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[7]}</Message>
+                    </MsgDiv>
+                  ) : error === 8 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[8]}</Message>
+                    </MsgDiv>
+                  ) : null}
                   <InputDiv>
                     <h3>Repeat Password</h3>
                     <InputP>비밀번호를 재입력해주세요</InputP>
                   </InputDiv>
-                  <Input type="password" name="repeatPassword" placeholder='password를 입력해주세요'
-                    onChange={handleInputs} ref={el => (inputRef.current[3] = el)}/>
-                  {error === 9 ? (<MsgDiv><Message>{errorMsg[9]}</Message></MsgDiv>) : (
-                    error === 10 ? (<MsgDiv><Message>{errorMsg[10]}</Message></MsgDiv>) : null
-                  )}
+                  <Input
+                    type="password"
+                    name="repeatPassword"
+                    placeholder="password를 입력해주세요"
+                    onChange={handleInputs}
+                    ref={(el) => (inputRef.current[3] = el)}
+                  />
+                  {error === 9 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[9]}</Message>
+                    </MsgDiv>
+                  ) : error === 10 ? (
+                    <MsgDiv>
+                      <Message>{errorMsg[10]}</Message>
+                    </MsgDiv>
+                  ) : null}
                   <ButtonDiv>
-                    <Button type="button" onClick={handleSubmit}>회원가입</Button>
+                    <Button type="button" onClick={handleSubmit}>
+                      회원가입
+                    </Button>
                   </ButtonDiv>
                 </FormDiv>
-                </Div>
-              </>)}
+              </Div>
+            </>
+          )}
         </Container>
       </Section>
     </Main>
   );
-}
+};
 
 export default Register;

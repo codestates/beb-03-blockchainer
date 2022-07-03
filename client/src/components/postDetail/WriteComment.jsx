@@ -5,13 +5,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { setReload } from "../../Redux/reload";
 
 const WriteCommentConatiner = styled.div`
-    width: 50%;
-    height: 3rem;
-    display: flex;
-    margin: 1.3rem;
-    padding-left: 4.5rem;
-    justify-content: center;
-`
+  width: 50%;
+  height: 3rem;
+  display: flex;
+  margin: 1.3rem;
+  padding-left: 4.5rem;
+  justify-content: center;
+`;
 
 const TextArea = styled.textarea`
   display: block;
@@ -33,79 +33,92 @@ const TextArea = styled.textarea`
 `;
 
 const CommentButton = styled.button`
-    background-color: #f5f6fa;
-    border-color: #f5f6fa;
-    font-size: 0.8rem;
-    border-radius: 2rem;
-    width: fit-content;
-    min-width: 3rem;
-    margin: 0.5rem;
+  background-color: #f5f6fa;
+  border-color: #f5f6fa;
+  font-size: 0.8rem;
+  border-radius: 2rem;
+  width: fit-content;
+  min-width: 3rem;
+  margin: 0.5rem;
 `;
 
-const WriteComment = ( {content = "", setUpdate = null, post_id, comment_id = null, userName} ) => {
+const WriteComment = ({
+  content = "",
+  setUpdate = null,
+  post_id,
+  comment_id = null,
+  userName,
+}) => {
+  const [newContent, setNewContent] = useState(content);
+  const reload = useSelector((state) => state.reload.controller);
+  const buttonName = setUpdate ? "수정" : "등록";
+  const dispatch = useDispatch();
 
-    const [newContent, setNewContent] = useState(content);
-    const reload = useSelector(state => state.reload.controller);
-    const buttonName = setUpdate ? "수정" : "등록";
-    const dispatch = useDispatch();
+  const handleCommentPost = useCallback(() => {
+    let url =
+      "http://ec2-3-38-101-203.ap-northeast-2.compute.amazonaws.com/comment/";
+    if (setUpdate) {
+      // 업데이트
+      if (newContent !== "" && comment_id && userName !== "") {
+        url += "update";
+        const payload = {
+          content: newContent,
+          id: comment_id,
+        };
 
-    const handleCommentPost = useCallback(() => {
-        let url = "http://localhost:4000/comment/";
-        if(setUpdate){
-            // 업데이트
-            if(newContent !== '' && comment_id && userName !== ''){
-                url += "update";
-                const payload = {
-                    content: newContent,
-                    id: comment_id
-                }
-                
-                axios.patch(url, payload)
-                    .then(el => {
-                        // console.log(el);
-                        setUpdate(false); 
-                        dispatch(setReload({
-                            controller: !reload
-                        }));                        
-                    })
-            } else {
-                alert("내용을 입력하세요!");
-            }
-        } else {
-            // 새 등록
-            if(newContent !== "" && post_id && userName !== ""){
-                url += "posting";
-                const payload = {
-                    writer: userName, 
-                    post_id,
-                    content : newContent
-                }
-                
-                axios.post(url, payload)
-                    .then(el => {
-                        // console.log(el);
-                        setNewContent(""); 
-                        dispatch(setReload({
-                            controller: !reload
-                        }));
-                    })
-                    .catch(err => console.log(err));
-            } else {
-                alert("내용을 입력하세요!");
-            }
-        }
-    }, [reload, dispatch, comment_id, newContent, post_id, setUpdate, userName]);
+        axios.patch(url, payload).then((el) => {
+          // console.log(el);
+          setUpdate(false);
+          dispatch(
+            setReload({
+              controller: !reload,
+            })
+          );
+        });
+      } else {
+        alert("내용을 입력하세요!");
+      }
+    } else {
+      // 새 등록
+      if (newContent !== "" && post_id && userName !== "") {
+        url += "posting";
+        const payload = {
+          writer: userName,
+          post_id,
+          content: newContent,
+        };
 
-    return (
+        axios
+          .post(url, payload)
+          .then((el) => {
+            // console.log(el);
+            setNewContent("");
+            dispatch(
+              setReload({
+                controller: !reload,
+              })
+            );
+          })
+          .catch((err) => console.log(err));
+      } else {
+        alert("내용을 입력하세요!");
+      }
+    }
+  }, [reload, dispatch, comment_id, newContent, post_id, setUpdate, userName]);
+
+  return (
     <WriteCommentConatiner>
-        <TextArea placeholder="Please enter your comment" 
-            value={newContent} 
-            onChange={(e) => setNewContent(e.target.value)}
-        />
-        <CommentButton onClick={handleCommentPost}>{buttonName}</CommentButton>
-        {setUpdate ? 
-            <CommentButton onClick={() => setUpdate(false)}>취소</CommentButton> : null}
-    </WriteCommentConatiner>)
-}
+      <TextArea
+        placeholder="Please enter your comment"
+        value={newContent}
+        onChange={(e) => setNewContent(e.target.value)}
+      />
+      <CommentButton onClick={handleCommentPost}>{buttonName}</CommentButton>
+      {setUpdate ? (
+        <CommentButton onClick={() => setUpdate(false)}>취소</CommentButton>
+      ) : null}
+    </WriteCommentConatiner>
+  );
+};
 
 export default WriteComment;

@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { useRef, useState } from 'react';
-import { Redirect, Link } from 'react-router-dom';
-import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
-import { setToken } from '../Redux/tokenSlice';
+import axios from "axios";
+import { useRef, useState } from "react";
+import { Redirect, Link } from "react-router-dom";
+import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { setToken } from "../Redux/tokenSlice";
 
 const Main = styled.main`
   margin-top: 90px;
@@ -86,7 +86,7 @@ const Button = styled.button`
   cursor: pointer;
   border-radius: 0.3rem;
   margin-right: 1rem;
-  
+
   &:hover {
     border: 0.1rem solid black;
     background-color: white;
@@ -107,13 +107,13 @@ const Li = styled.li`
   position: relative;
 
   ::after {
-    content: '|';
+    content: "|";
     align-items: center;
     color: grey;
   }
 
   :last-child::after {
-    content: '';
+    content: "";
   }
 `;
 
@@ -127,19 +127,18 @@ const ALink = styled(Link)`
 `;
 
 const Login = () => {
-  
   const dispatch = useDispatch();
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
   const errorMsg = [
-    '로그인 성공',
-    'username을 입력해주세요',
-    '비밀번호를 입력해주세요',
-    'username 또는 비밀번호를 잘못 입력했습니다',
+    "로그인 성공",
+    "username을 입력해주세요",
+    "비밀번호를 입력해주세요",
+    "username 또는 비밀번호를 잘못 입력했습니다",
   ];
   const [inputs, setInputs] = useState({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   });
   const [error, setError] = useState();
   /*
@@ -158,45 +157,51 @@ const Login = () => {
   };
 
   const handleLogin = () => {
-    console.log('Login Clicked!');
+    console.log("Login Clicked!");
 
     // 입력 여부 검사
-    if (inputs.username === '') {
+    if (inputs.username === "") {
       setError(1);
       usernameRef.current.focus();
-    } else if (inputs.password === '') {
+    } else if (inputs.password === "") {
       setError(2);
       passwordRef.current.focus();
     } else {
       // 백엔드로 로그인 요청 전송
-      const url = "http://localhost:4000/auth/login";
+      const url =
+        "http://ec2-3-38-101-203.ap-northeast-2.compute.amazonaws.com/auth/login";
       const payload = {
         username: inputs.username,
-        password: inputs.password
-      }
-      axios.post(url, payload)
-      .then((res) => {
-        console.log(res);
+        password: inputs.password,
+      };
+      axios
+        .post(url, payload)
+        .then((res) => {
+          console.log(res);
 
-        if (res.status === 200) {
-          // 로그인 성공
-          const accessToken = res.data.data.accessToken;
-          dispatch(setToken({
-            accessToken: String(accessToken),
-            username: inputs.username
-          }));
-          setError(0);
-          localStorage.setItem('user', JSON.stringify({
-            accessToken: String(accessToken),
-            username: inputs.username
-          }));
-        }
-      })
-      .catch(() => {
-        // 응답 결과에 따라 error 상태 저장
-        setError(3);
-      })
-      
+          if (res.status === 200) {
+            // 로그인 성공
+            const accessToken = res.data.data.accessToken;
+            dispatch(
+              setToken({
+                accessToken: String(accessToken),
+                username: inputs.username,
+              })
+            );
+            setError(0);
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                accessToken: String(accessToken),
+                username: inputs.username,
+              })
+            );
+          }
+        })
+        .catch(() => {
+          // 응답 결과에 따라 error 상태 저장
+          setError(3);
+        });
     }
   };
 
