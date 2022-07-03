@@ -5,21 +5,21 @@ const development = {
   username: env.DATABASE_USERNAME,
   password: env.DATABASE_PASSWORD,
   database: env.DATABASE_NAME,
-  host: "127.0.0.1",
+  host: env.DATABASE_HOST,
   dialect: "mysql",
 };
 const test = {
   username: env.DATABASE_USERNAME,
   password: env.DATABASE_PASSWORD,
   database: env.DATABASE_NAME,
-  host: "127.0.0.1",
+  host: env.DATABASE_HOST,
   dialect: "mysql",
 };
 const production = {
   username: env.DATABASE_USERNAME,
   password: env.DATABASE_PASSWORD,
   database: env.DATABASE_NAME,
-  host: "127.0.0.1",
+  host: env.DATABASE_HOST,
   dialect: "mysql",
 };
 
