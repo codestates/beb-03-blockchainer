@@ -246,7 +246,7 @@ const Register = () => {
 
       // 백엔드로 요청 전송
       const url =
-        "http://http://ec2-3-38-101-203.ap-northeast-2.compute.amazonaws.com/account/register";
+        "http://ec2-3-38-101-203.ap-northeast-2.compute.amazonaws.com/account/register";
       const payload = {
         email: inputs.email,
         username: inputs.username,
