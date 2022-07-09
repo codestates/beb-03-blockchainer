@@ -2,17 +2,17 @@ require("dotenv").config();
 const env = process.env;
 
 const development = {
-  username: env.DATABASE_USERNAME,
+  username: "root",
   password: env.DATABASE_PASSWORD,
-  database: env.DATABASE_NAME,
-  host: env.DATABASE_HOST,
+  database: "blockchainer",
+  host: "127.0.0.1",
   dialect: "mysql",
 };
 const test = {
-  username: env.DATABASE_USERNAME,
-  password: env.DATABASE_PASSWORD,
-  database: env.DATABASE_NAME,
-  host: env.DATABASE_HOST,
+  username: "root",
+  password: "null",
+  database: "database_test",
+  host: "127.0.0.1",
   dialect: "mysql",
 };
 const production = {
@@ -21,6 +21,7 @@ const production = {
   database: env.DATABASE_NAME,
   host: env.DATABASE_HOST,
   dialect: "mysql",
+  logging: false,
 };
 
 module.exports = { development, production, test };

@@ -1,21 +1,23 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { User } = require('../models');
-require('dotenv').config();
+const { User } = require("../models");
+require("dotenv").config();
+
+const crypto = require("crypto");
 
 const {
   isAuthorized,
   generateAccessToken,
   sendAccessToken,
-} = require('../token');
+} = require("../token");
 
-router.get('/login', async (req, res) => {
+router.get("/login", async (req, res) => {
   const accessTokenData = isAuthorized(req);
 
   console.log(accessTokenData);
 
   if (accessTokenData === undefined) {
-    res.status(401).send({ data: null, message: 'Not Authorized' });
+    res.status(401).send({ data: null, message: "Not Authorized" });
   } else {
     const userData = await User.findOne({
       where: { username: accessTokenData.username },
@@ -28,20 +30,24 @@ router.get('/login', async (req, res) => {
     };
 
     res.status(200).send({
-      message: 'Login Successed',
+      message: "Login Successed",
       data: userInfo,
     });
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+
   const userInfo = await User.findOne({
-    where: { username: username, password: password },
+    where: {
+      username: username,
+      password: crypto.createHash("sha512").update(password).digest("base64"),
+    },
   });
 
   if (!userInfo) {
-    res.status(400).send('Error: Login Failed');
+    res.status(400).send("Error: Login Failed");
   } else {
     console.log(userInfo);
 
@@ -52,12 +58,10 @@ router.post('/login', async (req, res) => {
       sendAccessToken(res, accessToken);
     }
   }
-
-  
 });
 
-router.post('/logout', (req, res) => {
-  res.status(205).send('Logout Successed');
+router.post("/logout", (req, res) => {
+  res.status(205).send("Logout Successed");
 });
 
 module.exports = router;
