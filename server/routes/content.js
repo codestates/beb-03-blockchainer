@@ -3,8 +3,6 @@ const router = express.Router();
 const issueToken = require("../modules/issue");
 const { User, Post, Comment } = require("../models");
 
-const value = "2000000000000000000";
-
 router.post("/", async (req, res) => {
   const newPost = await Post.create({
     writer: req.body.writer,
@@ -27,7 +25,7 @@ router.post("/", async (req, res) => {
     }
   )
     .then(
-      () => setTimeout(() => issueToken(receipt, value), 0),
+      () => setTimeout(() => issueToken(receipt, 2), 0),
       (e) => console.error(e)
     )
     .then(() =>

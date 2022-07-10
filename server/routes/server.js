@@ -1,17 +1,19 @@
 require("dotenv").config();
 const express = require("express");
 const router = express.Router();
-const Web3 = require("web3");
 const crypto = require("crypto");
-
 const { User } = require("../models");
+const deploy = require("../modules/deploy");
 
+const Web3 = require("web3");
 const web3 = new Web3(
   `https://ropsten.infura.io/v3/${process.env.INFURA_ADDRESS}`
 );
 
 const erc20abi = require("../../contracts/erc20abi");
 const erc20bytecode = require("../../contracts/erc20bytecode");
+const erc721abi = require("../../contracts/erc721abi");
+const erc721bytecode = require("../../contracts/erc721bytecode");
 
 router.post("/setting", async (req, res) => {
   const serverAccount = await User.findOne({
@@ -37,40 +39,42 @@ router.post("/setting", async (req, res) => {
       balance: "0",
     });
   }
-});
 
-router.post("/deploy", async (req, res) => {
-  const serverAccount = await User.findOne({
-    attributes: ["privatekey"],
-    where: {
-      username: "server",
-    },
-  });
-
-  const server = await web3.eth.accounts.wallet.add(process.env.SERVER_SECRET);
-
-  const parameter = {
-    from: server.address,
-    gas: 3000000,
-  };
-
+  const server = web3.eth.accounts.wallet.add(process.env.SERVER_SECRET);
   const tokenContract = new web3.eth.Contract(erc20abi);
+  const nftContract = new web3.eth.Contract(erc721abi);
+  const parameter = { from: server.address, gas: 3000000 };
 
-  tokenContract
-    .deploy({
-      data: erc20bytecode,
-    })
-    .send(parameter)
-    .on("receipt", async (receipt) => {
-      res.status(201).json({
-        message: "deploying ERC20 is succeed",
-        receipt,
-      });
-    })
-    .on("error", (error) => {
-      console.log(error);
-      res.status(400).json({ message: "deploying ERC20 is failed" });
-    });
+  deploy(tokenContract, erc20bytecode, parameter);
+
+  // tokenContract
+  //   .deploy({
+  //     data: erc20bytecode,
+  //   })
+  //   .send(parameter)
+  //   .on("receipt", async (receipt) => {
+  //     console.log(`ERC20 address : ${receipt.contractAddress}`);
+  //     console.log(`Tx hash : ${receipt.transactionHash}`);
+  //   })
+  //   .on("error", (error) => {
+  //     console.log(error);
+  //   });
+
+  // nftContract
+  //   .deploy({ data: erc721bytecode })
+  //   .send(parameter)
+  //   .on("receipt", async (receipt) => {
+  //     console.log(`ERC721 address : ${receipt.contractAddress}`);
+  //     console.log(`Tx hash : ${receipt.transactionHash}`);
+  //     res.status(201).json({
+  //       message: "deploying ERC721 is succeed",
+  //       receipt,
+  //     });
+  //   })
+  //   .on("error", (error) => {
+  //     console.log(error);
+  //     res.status(400).json({ message: "deploying ERC721 is failed" });
+  //   });
 });
 
 module.exports = router;

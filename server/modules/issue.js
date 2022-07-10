@@ -14,12 +14,14 @@ const erc20Contract = new web3.eth.Contract(
 );
 
 function issueToken(receipt, value) {
-  erc20Contract.methods.mintToken(receipt.address, value).send({
-    from: server.address,
-    to: process.env.ERC20_CONTRACT,
-    gasPrice: 100,
-    gas: 2000000,
-  });
+  erc20Contract.methods
+    .mintToken(receipt.address, web3.utils.toBN(value * 10 ** 18))
+    .send({
+      from: server.address,
+      to: process.env.ERC20_CONTRACT,
+      gasPrice: 100,
+      gas: 2000000,
+    });
 }
 
 module.exports = issueToken;
