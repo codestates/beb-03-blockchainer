@@ -53,12 +53,6 @@ $ npx sequelize-cli db:seed:all
 $ npm run start
 ```
 
-서버 실행 (nodemon)<br>
-
-```bash
-$ npm run start:dev
-```
-
 ## 서버 초기 설정
 
 postman을 사용을 권장합니다
