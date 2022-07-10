@@ -47,7 +47,7 @@ router.post("/deploy", async (req, res) => {
     },
   });
 
-  const server = await web3.eth.accounts.wallet.add(serverAccount.privatekey);
+  const server = await web3.eth.accounts.wallet.add(process.env.SERVER_SECRET);
 
   const parameter = {
     from: server.address,
