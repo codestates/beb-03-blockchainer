@@ -7,8 +7,8 @@ const { User } = require("../models");
 const web3 = new Web3(
   `https://ropsten.infura.io/v3/${process.env.INFURA_ADDRESS}`
 );
-const erc20abi = require("../contracts/erc20abi");
-const erc20bytecode = require("../contracts/erc20bytecode");
+const erc20abi = require("../../contracts/erc20abi");
+const erc20bytecode = require("../../contracts/erc20bytecode");
 
 router.post("/deploytoken", async (req, res) => {
   const serverAccount = await User.findOne({

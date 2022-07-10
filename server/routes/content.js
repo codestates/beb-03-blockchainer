@@ -10,7 +10,7 @@ const web3 = new Web3(
 );
 
 const value = "2000000000000000000";
-const erc20abi = require("../contracts/erc20abi");
+const erc20abi = require("../../contracts/erc20abi");
 const server = web3.eth.accounts.wallet.add(process.env.SERVER_SECRET);
 const erc20Contract = new web3.eth.Contract(
   erc20abi,
@@ -20,7 +20,7 @@ const erc20Contract = new web3.eth.Contract(
   }
 );
 
-router.post("/posting", async (req, res) => {
+router.post("/", async (req, res) => {
   const receipt = await User.findOne({
     where: {
       username: req.body.writer,
@@ -74,7 +74,7 @@ router.post("/posting", async (req, res) => {
   // }
 });
 
-router.patch("/update", async (req, res) => {
+router.patch("/", async (req, res) => {
   await Post.update(
     { title: req.body.title, content: req.body.content },
     {
@@ -101,7 +101,7 @@ router.patch("/update", async (req, res) => {
   }
 });
 
-router.post("/delete", async (req, res) => {
+router.delete("/", async (req, res) => {
   await Comment.destroy({
     where: {
       post_id: req.body.id,
@@ -111,11 +111,16 @@ router.post("/delete", async (req, res) => {
     where: {
       id: req.body.id,
     },
-  }).then(
-    res.status(200).json({
+  });
+  try {
+    res.status(201).json({
       message: "delete Successed",
-    })
-  );
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: "Error: delete Failed",
+    });
+  }
 });
 
 module.exports = router;

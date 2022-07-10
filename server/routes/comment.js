@@ -7,7 +7,7 @@ const Web3 = require("web3");
 const web3 = new Web3(
   `https://ropsten.infura.io/v3/${process.env.INFURA_ADDRESS}`
 );
-const erc20abi = require("../contracts/erc20abi");
+const erc20abi = require("../../contracts/erc20abi");
 const value = "1000000000000000000";
 const server = web3.eth.accounts.wallet.add(process.env.SERVER_SECRET);
 const erc20Contract = new web3.eth.Contract(
@@ -18,7 +18,7 @@ const erc20Contract = new web3.eth.Contract(
   }
 );
 
-router.post("/posting", async (req, res) => {
+router.post("/", async (req, res) => {
   const receipt = await User.findOne({
     where: {
       username: req.body.writer,
@@ -71,7 +71,7 @@ router.post("/posting", async (req, res) => {
   // }
 });
 
-router.patch("/update", async (req, res) => {
+router.patch("/", async (req, res) => {
   await Comment.update(
     { id: req.body.id, content: req.body.content },
     {
@@ -98,7 +98,7 @@ router.patch("/update", async (req, res) => {
   }
 });
 
-router.post("/delete", async (req, res) => {
+router.delete("/", async (req, res) => {
   await Comment.destroy({
     where: {
       id: req.body.id,
