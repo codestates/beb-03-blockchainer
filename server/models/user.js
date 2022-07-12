@@ -1,40 +1,57 @@
-"use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      User.hasMany(models.Post, {
-        foreignKey: "writer",
-        sourceKey: "username",
-      });
-      User.hasMany(models.Nft, {
-        foreignKey: "owner",
-        sourceKey: "username",
-      });
-      User.hasMany(models.Comment, {
-        foreignKey: "writer",
-        sourceKey: "username",
-      });
-    }
+const Sequelize = require("sequelize");
+
+module.exports = class User extends Sequelize.Model {
+  static init(sequelize) {
+    return super.init(
+      {
+        username: {
+          type: Sequelize.STRING,
+          primaryKey: true, // 추가
+          defaultValue: "", // 추가
+          allowNull: false,
+          unique: true,
+        },
+        password: {
+          type: Sequelize.STRING,
+        },
+        email: {
+          type: Sequelize.STRING,
+        },
+        address: {
+          type: Sequelize.STRING,
+        },
+        privatekey: {
+          type: Sequelize.STRING,
+        },
+        balance: {
+          type: Sequelize.FLOAT,
+        },
+      },
+      {
+        sequelize,
+        timestamps: true,
+        underscored: false,
+        modelName: "User",
+        tableName: "users",
+        paranoid: false,
+        charset: "utf8",
+        collate: "utf8_general_ci",
+      }
+    );
   }
-  User.init(
-    {
-      username: DataTypes.STRING,
-      password: DataTypes.STRING,
-      email: DataTypes.STRING,
-      address: DataTypes.STRING,
-      privatekey: DataTypes.STRING,
-      balance: DataTypes.FLOAT,
-    },
-    {
-      sequelize,
-      modelName: "User",
-    }
-  );
-  return User;
+
+  static associate(db) {
+    db.User.hasMany(db.Post, {
+      foreignKey: "writer",
+      sourceKey: "username",
+    });
+    db.User.hasMany(db.Comment, {
+      foreignKey: "writer",
+      sourceKey: "username",
+    });
+    db.User.hasMany(db.Nft, {
+      foreignKey: "owner",
+      sourceKey: "username",
+    });
+  }
 };

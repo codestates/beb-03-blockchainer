@@ -4,16 +4,17 @@ const router = express.Router();
 const lightwallet = require("eth-lightwallet");
 const { User } = require("../models");
 
+const crypto = require("crypto");
 const Web3 = require("web3");
 const web3 = new Web3(
   `https://ropsten.infura.io/v3/${process.env.INFURA_ADDRESS}`
 );
 
 router.post("/checkusername", async (req, res) => {
-  let reqUsername = req.body.username;
+  const { username } = req.body;
   const existuser = await User.findOne({
     where: {
-      username: reqUsername,
+      username: username,
     },
   });
   if (!existuser) {
@@ -28,14 +29,11 @@ router.post("/checkusername", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  let reqUsername, reqPassword, reqemail;
-  reqUsername = req.body.username;
-  reqPassword = req.body.password;
-  reqemail = req.body.email;
+  const { username, password, email } = req.body;
 
   User.findOrCreate({
     where: {
-      email: reqemail,
+      email: email,
     },
     default: {},
   }).then(([user, created]) => {
@@ -47,14 +45,17 @@ router.post("/register", async (req, res) => {
       let wallet = web3.eth.accounts.create();
       const newAccount = User.update(
         {
-          username: reqUsername,
-          password: reqPassword,
+          username: username,
+          password: crypto
+            .createHash("sha512")
+            .update(password)
+            .digest("base64"),
           address: wallet.address,
           privatekey: wallet.privateKey,
           balance: "0",
         },
         {
-          where: { email: reqemail },
+          where: { email: email },
         }
       )
         .then((result) => {
@@ -70,10 +71,10 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/findusername", async (req, res) => {
-  let reqemail = req.body.email;
+  const { email } = req.body;
   const matchuser = await User.findOne({
     where: {
-      email: reqemail,
+      email: email,
     },
   });
   console.log(matchuser);
@@ -93,12 +94,12 @@ router.post("/findusername", async (req, res) => {
 });
 
 router.post("/findpassword", async (req, res) => {
-  let reqUsername = req.body.username;
-  let reqemail = req.body.email;
+  const { username, email } = req.body;
+
   const matchuser = await User.findOne({
     where: {
-      username: reqUsername,
-      email: reqemail,
+      username: username,
+      email: email,
     },
   });
   if (!matchuser) {

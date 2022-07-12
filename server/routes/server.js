@@ -1,94 +1,80 @@
 require("dotenv").config();
 const express = require("express");
 const router = express.Router();
+const crypto = require("crypto");
 const { User } = require("../models");
-const Web3 = require("web3");
+const deploy = require("../modules/deploy");
 
+const Web3 = require("web3");
 const web3 = new Web3(
   `https://ropsten.infura.io/v3/${process.env.INFURA_ADDRESS}`
 );
 
-router.post("/createaccount", async (req, res) => {
-  let serverAccount = await User.findOne({
+const erc20abi = require("../../contracts/erc20abi");
+const erc20bytecode = require("../../contracts/erc20bytecode");
+const erc721abi = require("../../contracts/erc721abi");
+const erc721bytecode = require("../../contracts/erc721bytecode");
+
+router.post("/setting", async (req, res) => {
+  const serverAccount = await User.findOne({
     where: {
       username: "server",
     },
   });
 
   if (serverAccount) {
-    res.status(200).json({
-      message: "server account is already exist",
-      data: serverAccount,
+    res.status(400).json({
+      message: "setting is already done",
     });
   } else {
-    let wallet = web3.eth.accounts.create();
-
     let serverAccount = await User.create({
       username: "server",
-      password: "server",
+      password: crypto
+        .createHash("sha512")
+        .update(process.env.SERVER_SECRET)
+        .digest("base64"),
       email: "server@blockchiner.com",
-      address: wallet.address,
-      privatekey: wallet.privateKey,
+      address: process.env.SERVER_ADDRESS, // 환경변수로 바꾸기
+      privatekey: process.env.SERVER_SECRET, // 환경변수로 바꾸기
       balance: "0",
     });
-    try {
-      res
-        .status(200)
-        .json({ message: "server account is created", data: serverAccount });
-    } catch {
-      (err) => {
-        console.log(err);
-        res.status(400).json({ message: "server account create failed" });
-      };
-    }
   }
-});
 
-router.post("/ethfaucet", async (req, res) => {
-  const server = await User.findOne({
-    attributes: ["address"],
-    where: {
-      username: "server",
-    },
-  });
+  const server = web3.eth.accounts.wallet.add(process.env.SERVER_SECRET);
+  const tokenContract = new web3.eth.Contract(erc20abi);
+  const nftContract = new web3.eth.Contract(erc721abi);
+  const parameter = { from: server.address, gas: 3000000 };
 
-  web3.eth.accounts.privateKeyToAccount(process.env.FAUCET_SECRET);
+  deploy(tokenContract, erc20bytecode, parameter);
 
-  const nonce = await web3.eth.getTransactionCount(
-    process.env.FAUCET_ADDRESS,
-    "latest"
-  );
-  const transaction = {
-    to: server.address,
-    value: "1000000000000000000", // 1 ETH
-    gas: "30000",
-    nonce: nonce,
-  };
+  // tokenContract
+  //   .deploy({
+  //     data: erc20bytecode,
+  //   })
+  //   .send(parameter)
+  //   .on("receipt", async (receipt) => {
+  //     console.log(`ERC20 address : ${receipt.contractAddress}`);
+  //     console.log(`Tx hash : ${receipt.transactionHash}`);
+  //   })
+  //   .on("error", (error) => {
+  //     console.log(error);
+  //   });
 
-  const signedTx = await web3.eth.accounts.signTransaction(
-    transaction,
-    process.env.FAUCET_SECRET
-  );
-
-  const ethbalance = await web3.eth.getBalance(server.address);
-
-  web3.eth.sendSignedTransaction(
-    signedTx.rawTransaction,
-    function (error, hash) {
-      if (error) {
-        console.log(error);
-        res.status(400).json({ message: "Error: Faucet Transaction Failed" });
-      } else {
-        res.status(200).json({
-          data: {
-            server_ethbalance: web3.utils.fromWei(ethbalance, "ether"),
-            txhash: hash,
-          },
-          message: "Faucet Successed to server account",
-        });
-      }
-    }
-  );
+  // nftContract
+  //   .deploy({ data: erc721bytecode })
+  //   .send(parameter)
+  //   .on("receipt", async (receipt) => {
+  //     console.log(`ERC721 address : ${receipt.contractAddress}`);
+  //     console.log(`Tx hash : ${receipt.transactionHash}`);
+  //     res.status(201).json({
+  //       message: "deploying ERC721 is succeed",
+  //       receipt,
+  //     });
+  //   })
+  //   .on("error", (error) => {
+  //     console.log(error);
+  //     res.status(400).json({ message: "deploying ERC721 is failed" });
+  //   });
 });
 
 module.exports = router;
