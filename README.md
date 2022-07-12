@@ -1,7 +1,11 @@
 # BLOCKCHAINER
 ### beb-03-second-09
 
-배포 : http://blockchainer.com.s3-website.ap-northeast-2.amazonaws.com (refactoring branch 기준)
+배포 : http://blockchainer.com.s3-website.ap-northeast-2.amazonaws.com (refactoring branch 기준)  
+
+테스트 계정 제공
+- id : guestuser
+- password : 123123123
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fcodestates%2Fbeb-03-blockchainer&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
